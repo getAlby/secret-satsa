@@ -15,6 +15,49 @@ import "./App.css";
 
 const qr = new QrcodeDecoder();
 
+function TweetCard({ tweet }) {
+  const [href, setHref] = useState("");
+
+  useEffect(() => {
+    const qrImageUrl = tweet.entities?.media?.[0].media_url.replace(
+      "http://",
+      "https://"
+    );
+    if (qrImageUrl) {
+      qr.decodeFromImage(qrImageUrl, {
+        crossOrigin: "anonymous",
+      }).then((code) => {
+        const link = !/^lightning:/.test(code.data)
+          ? "lightning:" + code.data
+          : code.data;
+        setHref(link);
+      });
+    }
+  }, [tweet]);
+
+  return (
+    <Card sx={{ maxWidth: 600, mb: 3 }}>
+      <CardHeader
+        avatar={
+          <Avatar src={tweet.user.profile_image_url} alt="Profile image" />
+        }
+        title={tweet.user.screen_name}
+        subheader={tweet.created_at}
+      />
+      <CardContent>
+        <Typography variant="body2" color="text.secondary">
+          {tweet.text}
+        </Typography>
+      </CardContent>
+      <CardActions>
+        <Button variant="contained" href={href}>
+          Pay
+        </Button>
+      </CardActions>
+    </Card>
+  );
+}
+
 function App() {
   const [loading, setLoading] = useState(false);
   const [tweets, setTweets] = useState([]);
@@ -35,33 +78,6 @@ function App() {
       .finally(() => setLoading(false));
   }, []);
 
-  function handlePay(qrImage) {
-    const imgUrl = qrImage.replace("http://", "https://");
-    if (imgUrl) {
-      qr.decodeFromImage(imgUrl, {
-        crossOrigin: "anonymous",
-      }).then((code) => {
-        alert(`I should open from Alby: ${code.data}`);
-      });
-    } else {
-      alert("Error: Tweet doesn't contain a valid QR code");
-    }
-
-    const qrCodes = document.querySelectorAll(".qr-code");
-    qrCodes.forEach(function (qrCode) {
-      const imgUrl = qrCode.src.replace("http://", "https://");
-      qr.decodeFromImage(imgUrl, {
-        crossOrigin: "anonymous",
-      }).then((code) => {
-        let newNode = document.createElement("a");
-        newNode.setAttribute("href", "lightning:" + code.data);
-        const newContent = document.createTextNode("Pay");
-        newNode.appendChild(newContent);
-        qrCode.after(newNode);
-      });
-    });
-  }
-
   return (
     <div className="App">
       <CssBaseline />
@@ -74,39 +90,7 @@ function App() {
         )}
 
         {tweets.map((tweet) => (
-          <>
-            <Card sx={{ maxWidth: 600, mb: 3 }}>
-              <CardHeader
-                avatar={
-                  <Avatar
-                    src={tweet.user.profile_image_url}
-                    alt="Profile image"
-                  />
-                }
-                title={tweet.user.screen_name}
-                subheader={tweet.created_at}
-              />
-              <CardContent>
-                <Typography variant="body2" color="text.secondary">
-                  {tweet.text}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                {tweet.entities?.media?.[0].media_url ? (
-                  <Button
-                    variant="contained"
-                    onClick={() =>
-                      handlePay(tweet.entities?.media?.[0].media_url)
-                    }
-                  >
-                    Pay
-                  </Button>
-                ) : (
-                  "No QR Code found"
-                )}
-              </CardActions>
-            </Card>
-          </>
+          <TweetCard tweet={tweet} />
         ))}
       </Container>
     </div>

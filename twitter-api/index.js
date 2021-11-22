@@ -1,8 +1,11 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const cors = require("cors");
 const needle = require("needle");
 
 const app = express();
+
+app.use(cors());
 
 dotenv.config();
 
@@ -21,6 +24,7 @@ async function getTweets(query) {
       max_results: 100,
       expansions: "author_id,attachments.media_keys",
       "tweet.fields": "author_id,created_at",
+      "user.fields": "profile_image_url",
       "media.fields": "height,media_key,type,url,width",
     };
     return q;

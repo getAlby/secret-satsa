@@ -19,10 +19,7 @@ function TweetCard({ tweet }) {
   const [href, setHref] = useState("");
 
   useEffect(() => {
-    const qrImageUrl = tweet.entities?.media?.[0].media_url.replace(
-      "http://",
-      "https://"
-    );
+    const qrImageUrl = tweet.attachments?.media?.[0].url;
     if (qrImageUrl) {
       qr.decodeFromImage(qrImageUrl, {
         crossOrigin: "anonymous",
@@ -41,7 +38,7 @@ function TweetCard({ tweet }) {
         avatar={
           <Avatar src={tweet.user.profile_image_url} alt="Profile image" />
         }
-        title={tweet.user.screen_name}
+        title={tweet.user.name}
         subheader={tweet.created_at}
       />
       <CardContent>
@@ -64,15 +61,29 @@ function App() {
 
   useEffect(() => {
     setLoading(true);
-    fetch("https://companjenapps.com/twitter-api/?q=%23SecretSatsa")
+    fetch(process.env.REACT_APP_TWITTER_API)
       .then((response) => response.json())
       .then((data) => {
         // TODO: API results should only contain tweets that contain a QR code.
-        const filteredTweets = data.statuses.filter(
-          (tweet) => tweet.entities?.media?.[0].media_url !== undefined
+        const filteredTweets = data.data.filter(
+          (tweet) => tweet.attachments?.media_keys?.[0] !== undefined
         );
-        setTweets(filteredTweets);
-        console.log(data.statuses);
+        const completeTweets = filteredTweets.map((tweet) => {
+          const user = data.includes.users.find(
+            (user) => user.id === tweet.author_id
+          );
+          const attachments = {
+            media: tweet.attachments.media_keys.map((mediaKey) =>
+              data.includes.media.find((media) => media.media_key === mediaKey)
+            ),
+          };
+          return {
+            ...tweet,
+            user,
+            attachments,
+          };
+        });
+        setTweets(completeTweets);
       })
       .catch((e) => console.error(e))
       .finally(() => setLoading(false));
@@ -90,7 +101,7 @@ function App() {
         )}
 
         {tweets.map((tweet) => (
-          <TweetCard tweet={tweet} />
+          <TweetCard key={tweet.id} tweet={tweet} />
         ))}
       </Container>
     </div>

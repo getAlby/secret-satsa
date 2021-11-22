@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import QrcodeDecoder from "qrcode-decoder";
+import jsQR from "jsqr";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -13,7 +13,89 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
 import "./App.css";
 
-const qr = new QrcodeDecoder();
+let canvasElem;
+let gCtx;
+const defaultOption = { inversionAttempts: "attemptBoth" };
+
+async function decodeFromImage(img, options = {}) {
+  let imgDom = null;
+  const opts = {
+    ...defaultOption,
+    ...options,
+  };
+  if (+img.nodeType > 0) {
+    if (!img.src) {
+      throw new Error("The ImageElement must contain a src");
+    }
+    imgDom = img;
+  } else if (typeof img === "string") {
+    imgDom = document.createElement("img");
+    if (options.crossOrigin) {
+      imgDom.crossOrigin = options.crossOrigin;
+    }
+    imgDom.src = img;
+    const proms = () =>
+      new Promise((resolve) => {
+        imgDom.onload = () => resolve(true);
+      });
+    await proms();
+  }
+
+  let code = null;
+  if (imgDom) {
+    code = _decodeFromImageElm(imgDom, opts);
+  }
+  return code;
+}
+
+function _decodeFromImageElm(imgObj, options = {}) {
+  const opts = {
+    ...defaultOption,
+    ...options,
+  };
+  const imageData = _createImageData(imgObj, imgObj.width, imgObj.height);
+
+  // All same width / height???
+  console.log(imageData);
+
+  const code = jsQR(imageData.data, imageData.width, imageData.height, opts);
+
+  if (code) {
+    return code;
+  }
+
+  return false;
+}
+
+function _createImageData(target, width, height) {
+  if (!canvasElem) {
+    _prepareCanvas(width, height);
+  }
+
+  gCtx.clearRect(0, 0, width, height);
+  gCtx.drawImage(target, 0, 0, width, height);
+
+  const imageData = gCtx.getImageData(
+    0,
+    0,
+    canvasElem.width,
+    canvasElem.height
+  );
+
+  return imageData;
+}
+
+function _prepareCanvas(width, height) {
+  if (!canvasElem) {
+    canvasElem = document.createElement("canvas");
+    canvasElem.style.width = `${width}px`;
+    canvasElem.style.height = `${height}px`;
+    canvasElem.width = width;
+    canvasElem.height = height;
+  }
+
+  gCtx = canvasElem.getContext("2d");
+}
 
 function TweetCard({ tweet }) {
   const [href, setHref] = useState("");
@@ -22,7 +104,7 @@ function TweetCard({ tweet }) {
   useEffect(() => {
     const qrImageUrl = tweet.attachments?.media?.[0].url;
     if (qrImageUrl) {
-      qr.decodeFromImage(qrImageUrl, {
+      decodeFromImage(qrImageUrl, {
         crossOrigin: "anonymous",
       })
         .then((code) => {

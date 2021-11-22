@@ -18,17 +18,22 @@ const qr = new QrcodeDecoder();
 function TweetCard({ tweet }) {
   const [href, setHref] = useState("");
 
+  // TODO: Extracting lightning data seems to fail for many tweets...
   useEffect(() => {
     const qrImageUrl = tweet.attachments?.media?.[0].url;
     if (qrImageUrl) {
       qr.decodeFromImage(qrImageUrl, {
         crossOrigin: "anonymous",
-      }).then((code) => {
-        const link = !/^lightning:/.test(code.data)
-          ? "lightning:" + code.data
-          : code.data;
-        setHref(link);
-      });
+      })
+        .then((code) => {
+          if (code.data) {
+            const link = !/^lightning:/.test(code.data)
+              ? "lightning:" + code.data
+              : code.data;
+            setHref(link);
+          }
+        })
+        .catch((e) => console.error(e));
     }
   }, [tweet]);
 
@@ -47,7 +52,7 @@ function TweetCard({ tweet }) {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button variant="contained" href={href}>
+        <Button variant="contained" href={href} disabled={href === ""}>
           Pay
         </Button>
       </CardActions>

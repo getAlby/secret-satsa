@@ -9147,13 +9147,6 @@ q@^1.1.2:
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
   integrity sha1-fjL3W0E4EpHQRhHxvxQQmsAGUdc=
 
-qrcode-decoder@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/qrcode-decoder/-/qrcode-decoder-0.2.2.tgz#1f808afe927e901d402826d38c3bbbbffbb17b06"
-  integrity sha512-gyysRyA/SHaMn7yDKhFJ8AGNkbTJfSVq/7vtNWtBdW5PdT3m8SLX+YbWY04HRkoS/H7RaI3UfAsOw+cVqsfWHg==
-  dependencies:
-    jsqr "^1.4.0"
-
 qs@6.7.0:
   version "6.7.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"

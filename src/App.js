@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import jsQR from "jsqr";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -11,114 +10,12 @@ import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
-import "./App.css";
 
-let canvasElem;
-let gCtx;
-const defaultOption = { inversionAttempts: "attemptBoth" };
+import QRCodeReader from "./QRCodeReader";
 
-async function decodeFromImage(img, options = {}) {
-  let imgDom = null;
-  const opts = {
-    ...defaultOption,
-    ...options,
-  };
-  if (+img.nodeType > 0) {
-    if (!img.src) {
-      throw new Error("The ImageElement must contain a src");
-    }
-    imgDom = img;
-  } else if (typeof img === "string") {
-    imgDom = document.createElement("img");
-    if (options.crossOrigin) {
-      imgDom.crossOrigin = options.crossOrigin;
-    }
-    imgDom.src = img;
-    const proms = () =>
-      new Promise((resolve) => {
-        imgDom.onload = () => resolve(true);
-      });
-    await proms();
-  }
-
-  let code = null;
-  if (imgDom) {
-    code = _decodeFromImageElm(imgDom, opts);
-  }
-  return code;
-}
-
-function _decodeFromImageElm(imgObj, options = {}) {
-  const opts = {
-    ...defaultOption,
-    ...options,
-  };
-  const imageData = _createImageData(imgObj, imgObj.width, imgObj.height);
-
-  // All same width / height???
-  console.log(imageData);
-
-  const code = jsQR(imageData.data, imageData.width, imageData.height, opts);
-
-  if (code) {
-    return code;
-  }
-
-  return false;
-}
-
-function _createImageData(target, width, height) {
-  if (!canvasElem) {
-    _prepareCanvas(width, height);
-  }
-
-  gCtx.clearRect(0, 0, width, height);
-  gCtx.drawImage(target, 0, 0, width, height);
-
-  const imageData = gCtx.getImageData(
-    0,
-    0,
-    canvasElem.width,
-    canvasElem.height
-  );
-
-  return imageData;
-}
-
-function _prepareCanvas(width, height) {
-  if (!canvasElem) {
-    canvasElem = document.createElement("canvas");
-    canvasElem.style.width = `${width}px`;
-    canvasElem.style.height = `${height}px`;
-    canvasElem.width = width;
-    canvasElem.height = height;
-  }
-
-  gCtx = canvasElem.getContext("2d");
-}
+const QR = new QRCodeReader();
 
 function TweetCard({ tweet }) {
-  const [href, setHref] = useState("");
-
-  // TODO: Extracting lightning data seems to fail for many tweets...
-  useEffect(() => {
-    const qrImageUrl = tweet.attachments?.media?.[0].url;
-    if (qrImageUrl) {
-      decodeFromImage(qrImageUrl, {
-        crossOrigin: "anonymous",
-      })
-        .then((code) => {
-          if (code.data) {
-            const link = !/^lightning:/.test(code.data)
-              ? "lightning:" + code.data
-              : code.data;
-            setHref(link);
-          }
-        })
-        .catch((e) => console.error(e));
-    }
-  }, [tweet]);
-
   return (
     <Card sx={{ maxWidth: 600, mb: 3 }}>
       <CardHeader
@@ -134,7 +31,11 @@ function TweetCard({ tweet }) {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button variant="contained" href={href} disabled={href === ""}>
+        <Button
+          variant="contained"
+          href={tweet.href}
+          disabled={tweet.href === undefined}
+        >
           Pay
         </Button>
       </CardActions>
@@ -171,6 +72,32 @@ function App() {
           };
         });
         setTweets(completeTweets);
+
+        // Extract lightning data
+        (async function () {
+          for (let tw of completeTweets) {
+            const qrImageUrl = tw.attachments?.media?.[0].url;
+            if (qrImageUrl) {
+              const code = await QR.decodeFromImage(qrImageUrl, {
+                crossOrigin: "anonymous",
+              });
+
+              if (code.data) {
+                setTweets((prevState) =>
+                  prevState.map((prevTweet) => {
+                    if (prevTweet.id !== tw.id) {
+                      return prevTweet;
+                    }
+                    const href = !/^lightning:/.test(code.data)
+                      ? "lightning:" + code.data
+                      : code.data;
+                    return { ...prevTweet, href };
+                  })
+                );
+              }
+            }
+          }
+        })();
       })
       .catch((e) => console.error(e))
       .finally(() => setLoading(false));

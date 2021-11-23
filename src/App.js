@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import QrcodeDecoder from "qrcode-decoder";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -11,32 +10,12 @@ import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
-import "./App.css";
 
-const qr = new QrcodeDecoder();
+import QRCodeReader from "./QRCodeReader";
+
+const QR = new QRCodeReader();
 
 function TweetCard({ tweet }) {
-  const [href, setHref] = useState("");
-
-  // TODO: Extracting lightning data seems to fail for many tweets...
-  useEffect(() => {
-    const qrImageUrl = tweet.attachments?.media?.[0].url;
-    if (qrImageUrl) {
-      qr.decodeFromImage(qrImageUrl, {
-        crossOrigin: "anonymous",
-      })
-        .then((code) => {
-          if (code.data) {
-            const link = !/^lightning:/.test(code.data)
-              ? "lightning:" + code.data
-              : code.data;
-            setHref(link);
-          }
-        })
-        .catch((e) => console.error(e));
-    }
-  }, [tweet]);
-
   return (
     <Card sx={{ maxWidth: 600, mb: 3 }}>
       <CardHeader
@@ -52,7 +31,11 @@ function TweetCard({ tweet }) {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button variant="contained" href={href} disabled={href === ""}>
+        <Button
+          variant="contained"
+          href={tweet.href}
+          disabled={tweet.href === undefined}
+        >
           Pay
         </Button>
       </CardActions>
@@ -89,6 +72,32 @@ function App() {
           };
         });
         setTweets(completeTweets);
+
+        // Extract lightning data
+        (async function () {
+          for (let tw of completeTweets) {
+            const qrImageUrl = tw.attachments?.media?.[0].url;
+            if (qrImageUrl) {
+              const code = await QR.decodeFromImage(qrImageUrl, {
+                crossOrigin: "anonymous",
+              });
+
+              if (code.data) {
+                setTweets((prevState) =>
+                  prevState.map((prevTweet) => {
+                    if (prevTweet.id !== tw.id) {
+                      return prevTweet;
+                    }
+                    const href = !/^lightning:/.test(code.data)
+                      ? "lightning:" + code.data
+                      : code.data;
+                    return { ...prevTweet, href };
+                  })
+                );
+              }
+            }
+          }
+        })();
       })
       .catch((e) => console.error(e))
       .finally(() => setLoading(false));

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -10,10 +11,19 @@ import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
+import Snowfall from "react-snowfall";
 
 import QRCodeReader from "./QRCodeReader";
 
 const QR = new QRCodeReader();
+
+const theme = createTheme({
+  palette: {
+    background: {
+      default: "rgb(225, 31, 35)",
+    },
+  },
+});
 
 function TweetCard({ tweet }) {
   return (
@@ -108,13 +118,13 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container maxWidth="sm">
-        <h1>Secret Satsa</h1>
+        <h1 style={{ color: "white" }}>Secret Satsa</h1>
         {loading && (
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <CircularProgress />
+            <CircularProgress style={{ color: "white" }} />
           </Box>
         )}
 
@@ -122,7 +132,10 @@ function App() {
           <TweetCard key={tweet.id} tweet={tweet} />
         ))}
       </Container>
-    </div>
+
+      {/* TODO: find a better performing snow lib (seems a bit laggy on startup) */}
+      <Snowfall />
+    </ThemeProvider>
   );
 }
 

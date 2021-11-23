@@ -94,6 +94,10 @@ function App() {
                     return { ...prevTweet, href };
                   })
                 );
+              } else {
+                console.error(
+                  `Trying to read QR Code failed for: ${qrImageUrl}`
+                );
               }
             }
           }

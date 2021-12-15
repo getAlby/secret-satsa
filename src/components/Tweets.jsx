@@ -2,7 +2,7 @@ import TweetCard from "./TweetCard";
 import { useState } from "react";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
-import QRCodeReader from "../QRCodeReader";
+// import QRCodeReader from "../QRCodeReader";
 
 // const QR = new QRCodeReader();
 

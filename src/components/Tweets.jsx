@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import QRCodeReader from "../QRCodeReader";
 
-const QR = new QRCodeReader();
+// const QR = new QRCodeReader();
 
 export default function Tweets() {
   const [loading] = useState(false);

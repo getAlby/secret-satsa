@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: 'BR Firma';
+  src: url('../assets/fonts/BRFirma-Medium.woff2') format('woff2'),
+    url('../assets/fonts/BRFirma-Medium.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'BR Firma';
+  src: url('../assets/fonts/BRFirma-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'BR Firma';
+  src: url('../assets/fonts/BRFirma-Medium.otf') format('opentype');
+}

@@ -71,15 +71,17 @@ export default function Tweets() {
   }, []);
 
   return (
-    <>
+    <div className="w-3/5 mx-auto py-20">
       {loading && (
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <CircularProgress style={{ color: "white" }} />
         </Box>
       )}
-      {tweets.map((tweet) => (
-        <TweetCard key={tweet.id} tweet={tweet} />
-      ))}
-    </>
+      <div className="flex flex-col space-y-5">
+        {tweets.map((tweet) => (
+          <TweetCard key={tweet.id} tweet={tweet} />
+        ))}
+      </div>
+    </div>
   );
 }

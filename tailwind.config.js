@@ -40,6 +40,9 @@ module.exports = {
       fuchsia: colors.fuchsia,
       pink: colors.pink,
       rose: colors.rose,
+      accent: '#DFF1F1',
+      'dark-blue': '#293158',
+      'mandy-red': '#D8454D'
     }),
     columns: {
       auto: 'auto',
@@ -372,6 +375,8 @@ module.exports = {
         '"Courier New"',
         'monospace',
       ],
+      primary: ['"BR Firma"','ui-sans-serif',
+        'system-ui',]
     },
     fontSize: {
       xs: ['0.75rem', { lineHeight: '1rem' }],

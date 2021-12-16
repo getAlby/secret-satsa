@@ -15,7 +15,7 @@ function HowSection() {
             <div className='absolute left-0'>
             <img src={ChristmasTree} alt="christmas" className='w-[85%]'/>
             </div>
-            <div className='absolute top-16 right-48'>
+            <div className='absolute top-16 right-48 '>
             <img src={SnowIcon} alt="christmas" className='w-[85%]'/>
             </div>
             </div>

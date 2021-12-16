@@ -4,13 +4,12 @@ import Tweets from "./components/Tweets";
 import How from "./components/HowSection";
 
 function App() {
-
   return (
     <main>
       <Header />
-    <Tweets />
+      <Tweets />
       <About />
-    <How />
+      <How />
     </main>
   );
 }

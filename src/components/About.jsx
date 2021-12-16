@@ -6,7 +6,7 @@ function Gift() {
     return (
         <div className='w-full about-background'>
             <div className='py-80 text-center mx-auto'>
-                <p className='w-2/4 2xl:w-2/5 text-[32px] mx-auto'>
+                <p className='w-3/5 2xl:w-2/6 text-[32px] font-primary mx-auto'>
                    This website aggregates tweets with QR codes of Lightning invoices using the #SecretSatsa hashtag.<br/><br/>
                    To see how you can receive or send a gift yourself check out https://secretsatsa.com/ 
                    or just use Alby to pay an invoice and make someone else happy
@@ -15,8 +15,8 @@ function Gift() {
             <div className='absolute bottom-0'>
             <img src={GiftImage} alt="header" className='w-[70%]'/>
             </div>
-            <div className='absolute top-5 right-0'>
-            <img src={SnowImage} alt="header" className='w-[90%]'/>
+            <div className='absolute top-0 right-0'>
+            <img src={SnowImage} alt="header" className='w-[95%]'/>
             </div>
             </div>
     )

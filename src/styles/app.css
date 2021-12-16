@@ -6,3 +6,19 @@
 .about-background{
  background-image: linear-gradient(180deg, #DFF1F1 0%, #FFFFFF 100%);
 }
+
+@font-face {
+  font-family: 'BR Firma';
+  src: url('../assets/fonts/BRFirma-Medium.woff2') format('woff2'),
+    url('../assets/fonts/BRFirma-Medium.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'BR Firma';
+  src: url('../assets/fonts/BRFirma-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'BR Firma';
+  src: url('../assets/fonts/BRFirma-Medium.otf') format('opentype');
+}

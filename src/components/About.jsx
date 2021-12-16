@@ -2,7 +2,7 @@ import React from 'react'
 import GiftImage from "../assets/images/gift.png";
 import SnowImage from "../assets/images/snow.png";
 
-function Gift() {
+function About() {
     return (
         <div className='w-full about-background relative'>
             <div className='py-80 text-center mx-auto relative'>
@@ -23,4 +23,4 @@ function Gift() {
     )
 }
 
-export default Gift
+export default About

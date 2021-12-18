@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import Tweets from "./components/Tweets";
 import How from "./components/HowSection";
 import StepsSection from "./components/StepsSection";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <About />
       <StepsSection />
       <How />
+      <Footer />
     </main>
   );
 }

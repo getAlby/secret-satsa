@@ -22,3 +22,8 @@
   font-family: 'BR Firma';
   src: url('../assets/fonts/BRFirma-Medium.otf') format('opentype');
 }
+
+.circle-icon-color {
+  background-color: #D8454D;
+  ;
+}

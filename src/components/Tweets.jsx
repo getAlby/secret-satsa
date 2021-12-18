@@ -70,6 +70,8 @@ export default function Tweets() {
       .finally(() => setLoading(false));
   }, []);
 
+  if (tweets.length) return null;
+
   return (
     <div className="w-3/5 mx-auto py-20">
       {loading && (
